@@ -1,6 +1,6 @@
 require('dotenv').config()
 import jwt from "jsonwebtoken"
-// import Users from '../models/users'
+import Driver from '../models/drivers'
 
 
 const verifyToken = async (req: any, res: any, next: any) => {
@@ -15,19 +15,19 @@ const verifyToken = async (req: any, res: any, next: any) => {
     
     const JWT_SECRET: any = process.env.JWT_SECRET
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    // if(decoded.id){
-    //   const users = await Users.findById(decoded.id);
-    //   if(users) {
-    //     req.users = users;
-    //     next();
-    //   }else{
-    //     return res.status(401).json({ message: "Invalid Token" })    
-    //   }
-    // }
+    if(decoded.id){
+      const driver = await Driver.findById(decoded.id);
+      if(driver) {
+        req.driver = driver;
+        next();
+      }else{
+        return res.status(401).json({ message: "Invalid Token" })    
+      }
+    }
   } catch (err) {
     return res.status(401).json({ message: "Invalid Token" })
   }
     
   };
   
-  export default verifyToken;
+export default verifyToken
