@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 const Schema: any = mongoose.Schema
 
 const driverSchema = new Schema({
-    email: {
+    phone: {
         type: String,
         required: true
     },
