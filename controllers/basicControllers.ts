@@ -1,6 +1,7 @@
 import Driver from '../models/drivers'
 import passwordHash from '../middlewares/passwordEncrypt'
 import onlyPhoneExist from '../middlewares/detailsExists'
+import sendSms from '../middlewares/sms'
 import jwt from 'jsonwebtoken'
 
 
@@ -50,9 +51,17 @@ const register = async (req: any, res: any) => {
 
             let password: string = await passwordHash(req.body.password)
 
+            let num: string = ""
+            for(let i = 0; i < 6; i++){ 
+                num += Math.floor(Math.random() * (9 - 0 + 1)) + 0;
+            }
+
             let info: object = {
                 phone: req.body.phone,
                 password: password,
+                otp: num,
+                verified: '1',
+                kyc: '1'
             }
 
             const driver: any = await new Driver(info).save()
@@ -67,7 +76,17 @@ const register = async (req: any, res: any) => {
                     }
                 );
 
-                res.json({ message: 'account created', data: driver, token: token })
+
+                let msg: string = `to complete your registration, enter the OTP provided below in the next section\nOTP: ${num}`
+
+                const sent: any = await sendSms(msg, req.body.phone)
+
+                if(sent === true){
+                    res.json({ message: 'account created', data: driver, token: token })
+                }else{
+                    res.json({ message: 'error sending otp', data: driver, token: token })
+                }
+
             }else{
                 res.json({ message: 'error creating account' })
             }
@@ -81,6 +100,40 @@ const register = async (req: any, res: any) => {
     }
 }
 
+
+
+// verify phone number
+const verifyPhone = async (req: any, res: any) => {
+    try{
+        let phone: any = req.body.phone;
+        let otp: any = req.body.otp;
+
+        let driver: any = await Driver.findOne({
+            attributes: ['otp'],
+            where: { phone: phone }
+        })
+
+        if(driver.otp !== null){
+            if(driver.otp == otp){ 
+                const check: any = await Driver.update({ verified: 0 }, { where: { phone: phone }})
+                if(check !== null){
+                    return res.json({ message: 'phone number verified'})
+                }else{
+                    return res.json({ message: 'error verifying phone number'})
+                }
+            }else{
+                return res.json({ message: "OTP mismatch" });
+            }
+        }else{
+            res.json({ message: "No user found" });
+        }
+       
+
+    }catch (error) {
+        console.log(error)
+        res.json({message: 'Error completing operation:'});
+    }
+}
 
 
 
@@ -155,5 +208,6 @@ export default  {
     register,
     adminForgot,
     adminReset,
-    fetchAdmin
+    fetchAdmin,
+    verifyPhone
 }

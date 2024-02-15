@@ -10,6 +10,18 @@ const driverSchema = new Schema({
         type: String,
         required: true
     },
+    otp: {
+        type: String,
+        required: true
+    },
+    verified: {
+        type: String,
+        required: true
+    },
+    kyc: {
+        type: String,
+        required: true
+    },
 }, { timestamps: true })
 
 
