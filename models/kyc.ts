@@ -50,15 +50,35 @@ const kycSchema = new Schema({
         type: String,
         required: true
     },
-    otp: {
+    pvlicense: {
         type: String,
         required: true
     },
-    verified: {
+    proad: {
         type: String,
         required: true
     },
-    kyc: {
+    govtid: {
+        type: String,
+        required: true
+    },
+    hackey: {
+        type: String,
+        required: true
+    },
+    pcarown: {
+        type: String,
+        required: true
+    },
+    vinscert: {
+        type: String,
+        required: true
+    },
+    nin: {
+        type: String,
+        required: true
+    },
+    photo: {
         type: String,
         required: true
     },

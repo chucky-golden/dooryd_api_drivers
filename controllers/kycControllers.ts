@@ -29,7 +29,7 @@ const kycSub = async (req: any, res: any) => {
 
     }catch (error) {
         console.log(error)
-        res.json({ message: 'error processing request' })
+        res.status(501).json({ message: 'error processing request' })
     }
 }
 
